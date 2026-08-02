@@ -1,0 +1,656 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Registro de Empleados</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#10151c;
+    --ink-2:#1a2230;
+    --paper:#f6f4ee;
+    --paper-dim:#e9e6dc;
+    --line: rgba(16,21,28,0.12);
+    --line-dark: rgba(246,244,238,0.14);
+    --gold:#c9a227;
+    --green:#3e7a5c;
+    --brick:#b33f32;
+    --muted:#6b7280;
+    --muted-dark:#9aa4b2;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--ink);
+    background-image:
+      radial-gradient(circle at 15% -10%, rgba(201,162,39,0.10), transparent 45%),
+      radial-gradient(circle at 100% 0%, rgba(62,122,92,0.10), transparent 40%);
+    color:var(--paper);
+    font-family:'Inter', sans-serif;
+    min-height:100vh;
+    padding:48px 24px 80px;
+  }
+  .wrap{ max-width:1080px; margin:0 auto; }
+
+  header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    flex-wrap:wrap;
+    gap:16px;
+    margin-bottom:8px;
+    border-bottom:1px solid var(--line-dark);
+    padding-bottom:24px;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin:0 0 6px;
+  }
+  h1{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:38px;
+    margin:0;
+    letter-spacing:-0.01em;
+  }
+  .count-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    color:var(--muted-dark);
+    border:1px solid var(--line-dark);
+    border-radius:999px;
+    padding:6px 14px;
+  }
+
+  .toolbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    margin:28px 0 18px;
+    flex-wrap:wrap;
+  }
+  input[type=text], input[type=search]{
+    background:transparent;
+    border:1px solid var(--line-dark);
+    color:var(--paper);
+    padding:10px 14px;
+    border-radius:8px;
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+    min-width:220px;
+  }
+  input::placeholder{ color:var(--muted-dark); }
+
+  .btn{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    letter-spacing:.02em;
+    border-radius:6px;
+    padding:10px 16px;
+    border:1px solid transparent;
+    cursor:pointer;
+    transition:transform .08s ease, opacity .15s ease;
+  }
+  .btn:active{ transform: scale(0.97); }
+  .btn-primary{ background:var(--gold); color:var(--ink); font-weight:600; }
+  .btn-primary:hover{ opacity:.9; }
+  .btn-ghost{ background:transparent; color:var(--paper); border-color:var(--line-dark); }
+  .btn-ghost:hover{ border-color:var(--gold); color:var(--gold); }
+  .btn-danger{ background:transparent; color:var(--brick); border-color:rgba(179,63,50,0.4); }
+  .btn-danger:hover{ background:rgba(179,63,50,0.12); }
+  .btn-sm{ padding:6px 10px; font-size:12px; }
+
+  .card{
+    background:var(--paper);
+    color:var(--ink);
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 24px 60px -20px rgba(0,0,0,0.55);
+  }
+
+  table{ width:100%; border-collapse:collapse; }
+  thead th{
+    text-align:left;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--muted);
+    padding:16px 18px 10px;
+    border-bottom:1px solid var(--line);
+  }
+  tbody td{
+    padding:14px 18px;
+    border-bottom:1px solid var(--line);
+    font-size:14px;
+    vertical-align:middle;
+  }
+  tbody tr:last-child td{ border-bottom:none; }
+  tbody tr:hover{ background:var(--paper-dim); }
+  .mono{ font-family:'IBM Plex Mono', monospace; font-variant-numeric: tabular-nums; }
+  .name-cell{ font-family:'Fraunces', serif; font-weight:600; font-size:15px; }
+  .sub{ color:var(--muted); font-size:12px; }
+
+  .stamp{
+    display:inline-block;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10px;
+    letter-spacing:.08em;
+    padding:3px 8px;
+    border-radius:4px;
+    border:1px solid currentColor;
+    transform:rotate(-2deg);
+  }
+  .stamp.on{ color:var(--green); }
+  .stamp.off{ color:var(--brick); }
+
+  .row-actions{ display:flex; gap:6px; justify-content:flex-end; }
+  /* Los botones dentro de la tabla están sobre fondo claro (--paper),
+     no sobre el fondo oscuro de la página, así que necesitan su propio color */
+  /* Los botones dentro de un .modal también están sobre fondo claro (--paper),
+     igual que la tabla, así que necesitan color oscuro en vez del claro por defecto */
+  .modal .btn-ghost{
+    background:transparent;
+    color:var(--ink);
+    border-color:var(--line);
+  }
+  .modal .btn-ghost:hover{
+    background:var(--paper-dim);
+    border-color:var(--ink);
+  }
+
+  .row-actions .btn-ghost{
+    background:transparent;
+    color:var(--green);
+    border-color:rgba(62,122,92,0.4);
+  }
+  .row-actions .btn-ghost:hover{
+    background:rgba(62,122,92,0.12);
+    border-color:var(--green);
+    color:var(--green);
+  }
+  .row-actions .btn-danger{
+    background:transparent;
+    color:var(--brick);
+    border-color:rgba(179,63,50,0.4);
+  }
+  .row-actions .btn-danger:hover{
+    background:rgba(179,63,50,0.12);
+  }
+
+  .empty{
+    padding:60px 24px;
+    text-align:center;
+    color:var(--muted);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+  }
+
+  /* Modal */
+  .overlay{
+    position:fixed; inset:0;
+    background:rgba(16,21,28,0.72);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:50;
+  }
+  .overlay.show{ display:flex; }
+  .modal{
+    background:var(--paper);
+    color:var(--ink);
+    width:100%;
+    max-width:480px;
+    border-radius:14px;
+    padding:28px;
+    box-shadow:0 30px 70px -20px rgba(0,0,0,0.6);
+  }
+  .modal h2{
+    font-family:'Fraunces', serif;
+    font-size:22px;
+    margin:0 0 18px;
+  }
+  .field{ margin-bottom:14px; }
+  .field label{
+    display:block;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin-bottom:6px;
+  }
+  .field input, .field select{
+    width:100%;
+    padding:10px 12px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+    background:#fff;
+    color:var(--ink);
+  }
+  .field-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .modal-actions{
+    display:flex; justify-content:flex-end; gap:10px; margin-top:22px;
+  }
+  .error-box{
+    background:rgba(179,63,50,0.1);
+    color:var(--brick);
+    border:1px solid rgba(179,63,50,0.3);
+    border-radius:8px;
+    padding:10px 12px;
+    font-size:13px;
+    margin-bottom:14px;
+    display:none;
+  }
+  .toast{
+    position:fixed;
+    bottom:24px; left:50%;
+    transform:translateX(-50%) translateY(20px);
+    background:var(--ink-2);
+    color:var(--paper);
+    border:1px solid var(--line-dark);
+    padding:12px 20px;
+    border-radius:8px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    opacity:0;
+    transition:opacity .25s ease, transform .25s ease;
+    pointer-events:none;
+    z-index:60;
+  }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+  @media (max-width:640px){
+    thead{ display:none; }
+    tbody td{ display:block; border-bottom:none; padding:4px 18px; }
+    tbody tr{ border-bottom:1px solid var(--line); padding:12px 0; display:block; }
+    .row-actions{ justify-content:flex-start; padding-top:8px; }
+    .field-row{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <p class="eyebrow">Directorio interno &middot; Mongo_API</p>
+      <h1>Registro de Empleados</h1>
+    </div>
+    <span class="count-tag" id="countTag">— empleados</span>
+  </header>
+
+  <div class="toolbar">
+    <input type="search" id="searchInput" placeholder="Buscar por nombre, puesto o correo…" />
+    <button class="btn btn-primary" id="btnNew">+ Nuevo empleado</button>
+  </div>
+
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Empleado</th>
+          <th>Puesto</th>
+          <th>Departamento</th>
+          <th>Salario</th>
+          <th>Equipo</th>
+          <th>Estado</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+    <div class="empty" id="emptyState" style="display:none;">Sin registros todavía. Da de alta al primer empleado.</div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h2 id="modalTitle">Nuevo empleado</h2>
+    <div class="error-box" id="errorBox"></div>
+    <form id="empForm">
+      <div class="field-row">
+        <div class="field">
+          <label>ID empleado</label>
+          <input type="number" id="f_id_emp" required />
+        </div>
+        <div class="field">
+          <label>ID departamento</label>
+          <input type="number" id="f_id_dep" required />
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Nombre</label>
+          <input type="text" id="f_nombre" required />
+        </div>
+        <div class="field">
+          <label>Apellido</label>
+          <input type="text" id="f_apellido" required />
+        </div>
+      </div>
+      <div class="field">
+        <label>Correo</label>
+        <input type="email" id="f_email" required />
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Puesto</label>
+          <input type="text" id="f_puesto" required />
+        </div>
+        <div class="field">
+          <label>Salario</label>
+          <input type="number" step="0.01" id="f_salario" required />
+        </div>
+      </div>
+      <div class="field">
+        <label>Estado</label>
+        <select id="f_activo">
+          <option value="true">Activo</option>
+          <option value="false">Inactivo</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="btnCancel">Cancelar</button>
+        <button type="submit" class="btn btn-primary" id="btnSave">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="overlay" id="overlayPc">
+  <div class="modal">
+    <h2>Asignar equipo</h2>
+    <div class="error-box" id="errorBoxPc"></div>
+    <form id="pcForm">
+      <div class="field">
+        <label>Equipo disponible</label>
+        <select id="f_pc_id"></select>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="btnCancelPc">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Asignar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const API_BASE = 'http://localhost:3000/empleados';
+  const PCS_API = 'http://localhost:3000/pcs';
+
+  const tableBody = document.getElementById('tableBody');
+  const emptyState = document.getElementById('emptyState');
+  const countTag = document.getElementById('countTag');
+  const searchInput = document.getElementById('searchInput');
+  const overlay = document.getElementById('overlay');
+  const modalTitle = document.getElementById('modalTitle');
+  const empForm = document.getElementById('empForm');
+  const errorBox = document.getElementById('errorBox');
+  const toast = document.getElementById('toast');
+
+  const overlayPc = document.getElementById('overlayPc');
+  const pcForm = document.getElementById('pcForm');
+  const errorBoxPc = document.getElementById('errorBoxPc');
+  const fPcId = document.getElementById('f_pc_id');
+
+  let empleados = [];       // viene de /empleados/detalle: cada empleado ya trae su "departamento"
+  let pcsPorEmpleado = {};  // mapa id_emp -> pc, armado a partir de /pcs/detalle
+  let pcsLibres = [];       // pcs sin id_emp, para poder asignarlas
+  let editingId = null;
+  let asignandoEmpId = null;
+
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2200);
+  }
+
+  function showError(msg){
+    errorBox.textContent = msg;
+    errorBox.style.display = 'block';
+  }
+  function hideError(){
+    errorBox.style.display = 'none';
+    errorBox.textContent = '';
+  }
+
+  function money(n){
+    return new Intl.NumberFormat('es-MX', { style:'currency', currency:'MXN' }).format(n);
+  }
+
+  function initials(nombre, apellido){
+    return ((nombre?.[0]||'') + (apellido?.[0]||'')).toUpperCase();
+  }
+
+  async function loadEmpleados(){
+    try{
+      // /empleados/detalle: cada empleado ya trae { departamento: { id_dep, nombre } }
+      const resEmp = await fetch(`${API_BASE}/detalle`);
+      if(!resEmp.ok) throw new Error('No se pudo conectar con la API (' + resEmp.status + ')');
+      empleados = await resEmp.json();
+
+      // /pcs/detalle: cada pc ya trae { empleado: {...} } si tiene dueño
+      const resPcs = await fetch(`${PCS_API}/detalle`);
+      const pcs = resPcs.ok ? await resPcs.json() : [];
+
+      pcsPorEmpleado = {};
+      pcsLibres = [];
+      pcs.forEach(pc => {
+        if(pc.id_emp){
+          pcsPorEmpleado[pc.id_emp] = pc;
+        } else {
+          pcsLibres.push(pc);
+        }
+      });
+
+      render();
+    }catch(err){
+      tableBody.innerHTML = '';
+      emptyState.style.display = 'block';
+      emptyState.textContent = 'No se pudo conectar con la API en ' + API_BASE + '. ¿Está corriendo el backend (npm run dev)?';
+      countTag.textContent = '— sin conexión';
+      console.error(err);
+    }
+  }
+
+  function render(){
+    const q = searchInput.value.trim().toLowerCase();
+    const filtered = empleados.filter(e => {
+      if(!q) return true;
+      return [e.nombre, e.apellido, e.puesto, e.email].join(' ').toLowerCase().includes(q);
+    });
+
+    countTag.textContent = empleados.length + (empleados.length === 1 ? ' empleado' : ' empleados');
+
+    if(filtered.length === 0){
+      tableBody.innerHTML = '';
+      emptyState.style.display = 'block';
+      emptyState.textContent = q ? 'Sin resultados para “' + q + '”.' : 'Sin registros todavía. Da de alta al primer empleado.';
+      return;
+    }
+    emptyState.style.display = 'none';
+
+    tableBody.innerHTML = filtered.map(e => {
+      const pc = pcsPorEmpleado[e.id_emp];
+      const equipoHtml = pc
+        ? `<div class="sub" style="color:var(--ink)">${pc.marca}</div><div class="sub">#${pc.numero_serie}</div>`
+        : `<span class="sub">— sin asignar —</span>`;
+
+      return `
+      <tr>
+        <td class="mono">#${e.id_emp}</td>
+        <td>
+          <div class="name-cell">${e.nombre} ${e.apellido}</div>
+          <div class="sub">${e.email}</div>
+        </td>
+        <td>${e.puesto}</td>
+        <td>${e.departamento ? e.departamento.nombre : '—'}</td>
+        <td class="mono">${money(e.salario)}</td>
+        <td>${equipoHtml}</td>
+        <td><span class="stamp ${e.activo ? 'on' : 'off'}">${e.activo ? 'ACTIVO' : 'INACTIVO'}</span></td>
+        <td>
+          <div class="row-actions">
+            ${pc ? '' : `<button class="btn btn-ghost btn-sm" data-assign="${e.id_emp}">Asignar equipo</button>`}
+            <button class="btn btn-ghost btn-sm" data-edit="${e._id}">Editar</button>
+            <button class="btn btn-danger btn-sm" data-del="${e._id}">Eliminar</button>
+          </div>
+        </td>
+      </tr>
+    `;
+    }).join('');
+  }
+
+  function openModal(emp){
+    hideError();
+    editingId = emp ? emp._id : null;
+    modalTitle.textContent = emp ? 'Editar empleado' : 'Nuevo empleado';
+    document.getElementById('f_id_emp').value = emp ? emp.id_emp : '';
+    document.getElementById('f_id_dep').value = emp ? emp.id_dep : '';
+    document.getElementById('f_nombre').value = emp ? emp.nombre : '';
+    document.getElementById('f_apellido').value = emp ? emp.apellido : '';
+    document.getElementById('f_email').value = emp ? emp.email : '';
+    document.getElementById('f_puesto').value = emp ? emp.puesto : '';
+    document.getElementById('f_salario').value = emp ? emp.salario : '';
+    document.getElementById('f_activo').value = emp ? String(emp.activo) : 'true';
+    overlay.classList.add('show');
+  }
+  function closeModal(){
+    overlay.classList.remove('show');
+    empForm.reset();
+    editingId = null;
+  }
+
+  function openModalPc(idEmp){
+    errorBoxPc.style.display = 'none';
+    asignandoEmpId = idEmp;
+
+    if(pcsLibres.length === 0){
+      fPcId.innerHTML = '<option value="">No hay equipos libres</option>';
+    } else {
+      fPcId.innerHTML = pcsLibres
+        .map(pc => `<option value="${pc._id}">${pc.marca} — #${pc.numero_serie}</option>`)
+        .join('');
+    }
+    overlayPc.classList.add('show');
+  }
+  function closeModalPc(){
+    overlayPc.classList.remove('show');
+    asignandoEmpId = null;
+  }
+
+  document.getElementById('btnCancelPc').addEventListener('click', closeModalPc);
+  overlayPc.addEventListener('click', (e) => { if(e.target === overlayPc) closeModalPc(); });
+
+  pcForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if(!fPcId.value){
+      errorBoxPc.textContent = 'No hay ningún equipo disponible para asignar.';
+      errorBoxPc.style.display = 'block';
+      return;
+    }
+    try{
+      const res = await fetch(`${PCS_API}/${fPcId.value}/asignar`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id_emp: asignandoEmpId }),
+      });
+      if(!res.ok) throw new Error('No se pudo asignar el equipo');
+      showToast('Equipo asignado');
+      closeModalPc();
+      await loadEmpleados();
+    }catch(err){
+      errorBoxPc.textContent = err.message;
+      errorBoxPc.style.display = 'block';
+    }
+  });
+
+  document.getElementById('btnNew').addEventListener('click', () => openModal(null));
+  document.getElementById('btnCancel').addEventListener('click', closeModal);
+  overlay.addEventListener('click', (e) => { if(e.target === overlay) closeModal(); });
+  searchInput.addEventListener('input', render);
+
+  tableBody.addEventListener('click', (e) => {
+    const editId = e.target.dataset.edit;
+    const delId = e.target.dataset.del;
+    const assignId = e.target.dataset.assign;
+    if(editId){
+      const emp = empleados.find(x => x._id === editId);
+      openModal(emp);
+    }
+    if(delId){
+      handleDelete(delId);
+    }
+    if(assignId){
+      openModalPc(Number(assignId));
+    }
+  });
+
+  async function handleDelete(id){
+    const emp = empleados.find(x => x._id === id);
+    if(!confirm(`¿Eliminar a ${emp?.nombre} ${emp?.apellido}? Esta acción no se puede deshacer.`)) return;
+    try{
+      const res = await fetch(`${API_BASE}/${id}`, { method:'DELETE' });
+      if(!res.ok) throw new Error('No se pudo eliminar');
+      showToast('Empleado eliminado');
+      await loadEmpleados();
+    }catch(err){
+      showToast('Error al eliminar');
+      console.error(err);
+    }
+  }
+
+  empForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    hideError();
+
+    const payload = {
+      id_emp: Number(document.getElementById('f_id_emp').value),
+      id_dep: Number(document.getElementById('f_id_dep').value),
+      nombre: document.getElementById('f_nombre').value.trim(),
+      apellido: document.getElementById('f_apellido').value.trim(),
+      email: document.getElementById('f_email').value.trim(),
+      puesto: document.getElementById('f_puesto').value.trim(),
+      salario: Number(document.getElementById('f_salario').value),
+      activo: document.getElementById('f_activo').value === 'true',
+    };
+
+    const url = editingId ? `${API_BASE}/${editingId}` : API_BASE;
+    const method = editingId ? 'PUT' : 'POST';
+
+    try{
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if(!res.ok){
+        const errData = await res.json().catch(() => ({}));
+        const msg = Array.isArray(errData.message) ? errData.message.join(', ') : (errData.message || 'Error al guardar');
+        throw new Error(msg);
+      }
+      showToast(editingId ? 'Empleado actualizado' : 'Empleado creado');
+      closeModal();
+      await loadEmpleados();
+    }catch(err){
+      showError(err.message);
+    }
+  });
+
+  loadEmpleados();
+</script>
+</body>
+</html>
