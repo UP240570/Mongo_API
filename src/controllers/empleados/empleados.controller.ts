@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Put,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put} from '@nestjs/common';
 import { EmpleadosService } from '../../services/empleados/empleados.service';
 import { CreateEmpleadoDto } from '../../dto/create-empleado.dto';
 import { UpdateEmpleadoDto } from '../../dto/update-empleado.dto';
