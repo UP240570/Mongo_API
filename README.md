@@ -21,7 +21,7 @@ API RESTful desarrollada con **NestJS** y **MongoDB** para gestionar el inventar
 ### 📊 Diagrama del Modelo
 El modelo contempla las colecciones de **`pcs`**, **`empleados`** y **`departamentos`**.
 
-![Diagrama Modelo Relacional](./Modelo_Relacional.png)
+![Diagrama Modelo Relacional](./docs_png/Modelo_Relacional.png)
 
 ```text```
   [ pcs ] 0..1  <----->  1 [ empleados ] N  <----->  1 [ departamentos ]
@@ -59,9 +59,9 @@ Primero se corre el backend, y en seguida el frontend:
 
 ### 🖼️ Capturas de Pantalla en Ejecución
 
-![Vista de la Interfaz - Captura 1](./frontend_inicio.png)
+![Vista de la Interfaz - Captura 1](./docs_png/frontend_inicio.png)
 
-![Gestión y Registro - Captura 2](./frontend_formulario.png)
+![Gestión y Registro - Captura 2](./docs_png/frontend_formulario.png)
 
 
 
@@ -74,3 +74,10 @@ La colección completa de peticiones HTTP para probar los endpoints de la API (`
 2. Hacer clic en el botón **Open Collection**.
 3. Seleccionar la carpeta `bruno-peticiones` ubicada en la raíz de este proyecto.
 4. Asegurarse de que el Backend esté corriendo en `http://localhost:3000` y ejecutar las peticiones.
+
+
+### 🧪 Capturas de Pruebas en Bruno (API REST)
+
+![Prueba GET Detalle](./docs_png/GET_detalles.png)
+
+![Prueba POST Crear](./docs_png/POST_empleado.png)
