@@ -1,0 +1,24 @@
+info:
+  name: POST pc
+  type: http
+  seq: 8
+
+http:
+  method: POST
+  url: http://localhost:3000/pcs
+  body:
+    type: json
+    data: |-
+      {
+        "id_pc": 3,
+        "marca": "Apple",
+        "numero_serie": "AP1222-0003",
+        "fecha_compra": "2025-05-20"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 @Schema({ collection: 'pcs' })
 export class Pc extends Document {
-  @Prop({ required: true, unique: true, index: true })
+  @Prop({ required: true, unique: true, index: true, versionKey: false })
   id_pc!: number;
 
   @Prop({ required: true, trim: true })

@@ -1,0 +1,15 @@
+info:
+  name: GET empleados/:id_mongo
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: http://localhost:3000/empleados/6a557dad9c26cde2dd2022ac
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

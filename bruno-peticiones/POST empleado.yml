@@ -1,0 +1,29 @@
+info:
+  name: POST empleado
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:3000/empleados
+  body:
+    type: json
+    data: |-
+      {
+        "id_emp": 103,
+        "nombre": "Chava",
+        "apellido": "Castillo",
+        "email": "chava44@empresa.com",
+        "puesto": "Contador",
+        "id_dep": 10,
+        "salario": 35000,
+        "fecha_ingreso": "2026-08-02",
+        "activo": true
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

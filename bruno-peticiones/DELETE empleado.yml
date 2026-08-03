@@ -1,0 +1,15 @@
+info:
+  name: DELETE empleado
+  type: http
+  seq: 7
+
+http:
+  method: DELETE
+  url: http://localhost:3000/empleados/6a557dad9c26cde2dd2022ac
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
